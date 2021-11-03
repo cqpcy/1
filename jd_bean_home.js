@@ -84,20 +84,6 @@ const JD_API_HOST = 'https://api.m.jd.com/';
           await help(code[0], code[1]);
         }
       }
-      if (helpAuthor && $.authorCode && $.canHelp) {
-        console.log(`\n【抢京豆】${$.UserName} 去帮助作者`)
-        for (let code of $.authorCode) {
-          const helpRes = await help(code.shareCode, code.groupCode);
-          if (helpRes && helpRes['code'] === '0') {
-            if (helpRes && helpRes.data && helpRes.data.respCode === '') {
-              console.log(`${helpRes.data.helpToast}\n`);
-              break;
-            }
-          } else {
-            console.log(`助力异常:${JSON.stringify(helpRes)}\n`);
-          }
-        }
-      }
       for (let j = 1; j < $.newShareCodes.length && $.canHelp; j++) {
         let code = $.newShareCodes[j];
         if(code[2] && code[2] ===  $.UserName){
