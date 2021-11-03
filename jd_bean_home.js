@@ -425,6 +425,7 @@ function doTask2() {
     })
 }
 
+
   return new Promise(resolve => {
     const options = {
       url: `${url}?${new Date()}`, "timeout": 10000, headers: {
@@ -456,7 +457,6 @@ function doTask2() {
       }
     })
   })
-}
 function getUserInfo() {
   return new Promise(resolve => {
     $.post(taskUrl('signBeanGroupStageIndex', 'body'), async (err, resp, data) => {
