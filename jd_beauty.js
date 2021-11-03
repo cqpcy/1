@@ -8,7 +8,6 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 const WebSocket = require('ws');
 //const WebSocket = $.isNode() ? require('websocket').w3cwebsocket: SockJS;
-$.accountCheck = true;
 $.init = false;
 // const bean = 1; //兑换多少豆，默认是500
 //IOS等用户直接用NobyDa的jd cookie
@@ -50,16 +49,6 @@ if ($.isNode()) {
         }
         continue
       }
-      await accountCheck();
-      while (!$.hasDone) {
-        await $.wait(1000)
-      }
-      if ($.accountCheck) {
-        await jdBeauty();
-      }
-      if ($.accountCheck) {
-        helpInfo = $.helpInfo;
-      }
     }
   }
 })()
@@ -70,70 +59,8 @@ if ($.isNode()) {
     $.done();
   })
 
-async function accountCheck() {
-  $.hasDone = false;
-  console.log(`***检测账号是否黑号***`);
-  await getIsvToken()
-  await getIsvToken2()
-  await getToken()
-  if (!$.token) {
-    console.log(`\n\n提示：请尝试换服务器ip或者设置"xinruimz-isv.isvjcloud.com"域名直连，或者自定义UA再次尝试(环境变量JD_USER_AGENT)\n\n`)
-    process.exit(0);
-    return
-  }
-  let client = new WebSocket(`wss://xinruimz-isv.isvjcloud.com/wss/?token=${$.token}`, null, {
-    headers: {
-      'user-agent': $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;10.0.2;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1"),
-    }
-  });
-  client.onopen = async () => {
-    console.log(`美容研究院服务器连接成功`);
-    client.send('{"msg":{"type":"action","args":{"source":1},"action":"_init_"}}');
-    await $.wait(1000);
-    client.send(`{"msg":{"type":"action","args":{"source":1},"action":"get_user"}}`);
-  };
-  client.onmessage = async function (e) {
-    if (e.data !== 'pong' && e.data && safeGet(e.data)) {
-      let vo = JSON.parse(e.data);
-      if (vo.action === "_init_") {
-        let vo = JSON.parse(e.data);
-        if (vo.msg === "风险用户") {
-          $.accountCheck = false;
-          // $.init=true;
-          client.close();
-          console.log(`${vo.msg}，跳过此账号`)
-        }
-      } else if (vo.action === "get_user") {
-        // $.init=true;
-        $.accountCheck = true;
-        client.close();
-        console.log(`${vo.msg}，账号正常`);
-      }
-    }
-    client.onclose = () => {
-      $.hasDone = true;
-      // console.log(client.readyState);
-      console.log('服务器连接关闭');
-    };
-    await $.wait(1000);
-  }
-}
 
-async function jdBeauty() {
-  $.hasDone = false
-  // await getIsvToken()
-  // await getIsvToken2()
-  // await getToken()
-  // if (!$.token) {
-  //   console.log(`\n\n提示：请尝试换服务器ip或者设置"xinruimz-isv.isvjcloud.com"域名直连，或者自定义UA再次尝试(环境变量JD_USER_AGENT)\n\n`)
-  //   return
-  // }
-  await mr()
-  while (!$.hasDone) {
-    await $.wait(1000)
-  }
-  await showMsg();
-}
+
 
 async function mr() {
   $.coins = 0
@@ -195,7 +122,6 @@ async function mr() {
     console.log(`本次运行获得美妆币${$.coins}`)
     console.log('服务器连接关闭');
     $.init = true;
-    $.hasDone = true;
     for (let i = 0; i < $.pos.length && i < $.tokens.length; ++i) {
       $.helpInfo.push(`{"msg":{"type":"action","args":{"inviter_id":"${$.userInfo.id}","position":"${$.pos[i]}","token":"${$.tokens[i]}"},"action":"employee"}}`)
     }
