@@ -9,9 +9,9 @@ const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 const WebSocket = require('ws');
 //const WebSocket = $.isNode() ? require('websocket').w3cwebsocket: SockJS;
 $.init = false;
-// const bean = 1; //兑换多少豆，默认是500
+// const bean = 500; //兑换多少豆，默认是500
 //IOS等用户直接用NobyDa的jd cookie
-let cookiesArr = [], cookie = '', message, helpInfo, ADD_CART = false;
+let cookiesArr = [], cookie = '', message;
 
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
